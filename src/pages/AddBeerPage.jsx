@@ -1,131 +1,158 @@
 import { useState } from "react";
+import axios from "axios";  // Import axios for making the POST request
 
 function AddBeerPage() {
-  // State variables to store the values of the form inputs. You can leave these as they are.
+  // State variables for each form input
   const [name, setName] = useState("");
   const [tagline, setTagline] = useState("");
   const [description, setDescription] = useState("");
   const [imageUrl, setImageUrl] = useState("");
   const [firstBrewed, setFirstBrewed] = useState("");
   const [brewersTips, setBrewersTips] = useState("");
-  const [attenuationLevel, setAttenuationLevel] = useState(0);
+  const [attenuationLevel, setAttenuationLevel] = useState("");
   const [contributedBy, setContributedBy] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");  // For success message after submission
+  const [errorMessage, setErrorMessage] = useState("");  // For error message
 
-  // Handler functions for the form inputs. You can leave these as they are.
-  const handleName = (e) => setName(e.target.value);
-  const handleTagline = (e) => setTagline(e.target.value);
-  const handleDescription = (e) => setDescription(e.target.value);
-  const handleImageUrl = (e) => setImageUrl(e.target.value);
-  const handleFirstBrewed = (e) => setFirstBrewed(e.target.value);
-  const handleBrewersTips = (e) => setBrewersTips(e.target.value);
-  const handleAttenuationLevel = (e) => setAttenuationLevel(e.target.value);
-  const handleContributedBy = (e) => setContributedBy(e.target.value);
+  // Submit handler function for form
+  const handleSubmit = (e) => {
+    e.preventDefault();  // Prevent page reload on form submission
 
+    // Create the beer object to send to the API
+    const newBeer = {
+      name,
+      tagline,
+      description,
+      image_url: imageUrl,
+      first_brewed: firstBrewed,
+      brewers_tips: brewersTips,
+      attenuation_level: Number(attenuationLevel), // Make sure it's a number
+      contributed_by,
+    };
 
+    // Make the POST request to the Beers API
+    axios
+      .post("https://ih-beers-api2.herokuapp.com/beers/new", newBeer)
+      .then((response) => {
+        setSuccessMessage("Beer added successfully!");  // Show success message
+        setErrorMessage("");  // Clear any previous error messages
+      })
+      .catch((err) => {
+        setErrorMessage("There was an error adding the beer.");  // Show error message
+        setSuccessMessage("");  // Clear any previous success messages
+      });
+  };
 
-  // TASK:
-  // 1. Create a function to handle the form submission and send the form data to the Beers API to create a new beer.
-  // 2. Use axios to make a POST request to the Beers API.
-  // 3. Once the beer is created, navigate the user to the page showing the list of all beers.
-
-
-
-  // Structure and the content of the page showing the form for adding a new beer. You can leave this as it is.
   return (
-    <>
-      <div className="d-inline-flex flex-column w-100 p-4">
-        <form>
-          <label>Name</label>
+    <div className="d-inline-flex flex-column justify-content-center align-items-center w-100 p-4">
+      <h2>Add New Beer</h2>
+
+      {/* Form to add a new beer */}
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label htmlFor="name">Name</label>
           <input
-            className="form-control mb-4"
             type="text"
-            name="name"
-            placeholder="Beer Name"
+            id="name"
+            className="form-control"
             value={name}
-            onChange={handleName}
+            onChange={(e) => setName(e.target.value)}
+            required
           />
-          <label>Tagline</label>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="tagline">Tagline</label>
           <input
-            className="form-control mb-4"
             type="text"
-            name="tagline"
-            placeholder="Beer Tagline"
+            id="tagline"
+            className="form-control"
             value={tagline}
-            onChange={handleTagline}
+            onChange={(e) => setTagline(e.target.value)}
+            required
           />
+        </div>
 
-          <label className="form-label">Description</label>
+        <div className="form-group">
+          <label htmlFor="description">Description</label>
           <textarea
-            className="form-control mb-4"
-            type="text"
-            name="description"
-            placeholder="Description"
-            rows="3"
+            id="description"
+            className="form-control"
             value={description}
-            onChange={handleDescription}
+            onChange={(e) => setDescription(e.target.value)}
+            required
           ></textarea>
+        </div>
 
-          <label>Image</label>
+        <div className="form-group">
+          <label htmlFor="imageUrl">Image URL</label>
           <input
-            className="form-control mb-4"
             type="text"
-            name="imageUrl"
-            placeholder="Image URL"
+            id="imageUrl"
+            className="form-control"
             value={imageUrl}
-            onChange={handleImageUrl}
+            onChange={(e) => setImageUrl(e.target.value)}
           />
+        </div>
 
-          <label>First Brewed</label>
+        <div className="form-group">
+          <label htmlFor="firstBrewed">First Brewed</label>
           <input
-            className="form-control mb-4"
             type="text"
-            name="firstBrewed"
-            placeholder="Date - MM/YYYY"
+            id="firstBrewed"
+            className="form-control"
             value={firstBrewed}
-            onChange={handleFirstBrewed}
+            onChange={(e) => setFirstBrewed(e.target.value)}
+            required
           />
+        </div>
 
-          <label>Brewer Tips</label>
+        <div className="form-group">
+          <label htmlFor="brewersTips">Brewer's Tips</label>
           <input
-            className="form-control mb-4"
             type="text"
-            name="brewersTips"
-            placeholder="..."
+            id="brewersTips"
+            className="form-control"
             value={brewersTips}
-            onChange={handleBrewersTips}
+            onChange={(e) => setBrewersTips(e.target.value)}
+            required
           />
+        </div>
 
-          <label>Attenuation Level</label>
-          <div className="input-group mb-2">
-            <div className="input-group-prepend">
-              <span className="input-group-text" id="basic-addon1">
-                %
-              </span>
-            </div>
-            <input
-              className="form-control mb-4"
-              type="number"
-              name="attenuationLevel"
-              value={attenuationLevel}
-              onChange={handleAttenuationLevel}
-              min={0}
-              max={100}
-            />
-          </div>
-
-          <label>Contributed By</label>
+        <div className="form-group">
+          <label htmlFor="attenuationLevel">Attenuation Level</label>
           <input
-            className="form-control mb-4"
-            type="text"
-            name="contributedBy"
-            placeholder="Contributed by"
-            value={contributedBy}
-            onChange={handleContributedBy}
+            type="number"
+            id="attenuationLevel"
+            className="form-control"
+            value={attenuationLevel}
+            onChange={(e) => setAttenuationLevel(e.target.value)}
+            required
           />
-          <button className="btn btn-primary btn-round">Add Beer</button>
-        </form>
-      </div>
-    </>
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="contributedBy">Contributed By</label>
+          <input
+            type="text"
+            id="contributedBy"
+            className="form-control"
+            value={contributedBy}
+            onChange={(e) => setContributedBy(e.target.value)}
+            required
+          />
+        </div>
+
+        {/* Success or error messages */}
+        {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}
+        {errorMessage && <div className="alert alert-danger mt-3">{errorMessage}</div>}
+
+        {/* Submit button */}
+        <button type="submit" className="btn btn-primary mt-3">
+          Add Beer
+        </button>
+      </form>
+    </div>
   );
 }
 
